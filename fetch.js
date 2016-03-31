@@ -1,9 +1,11 @@
 (function(self) {
   'use strict';
 
-  if (self.fetch) {
-    return
-  }
+  // Removed to override browser's fetch
+  
+  // if (self.fetch) {
+  //   return
+  // }
 
   var support = {
     iterable: 'Symbol' in self && 'iterator' in Symbol,
@@ -433,7 +435,7 @@
 
       if (request.timeout && request.timeout > 0) {
         setTimeout(timeoutRequest, request.timeout);
-      } else if (request.timeout.then) {
+      } else if (request.timeout && request.timeout.then) {
         request.timeout.then(timeoutRequest);
       }
 
