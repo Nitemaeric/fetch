@@ -302,6 +302,7 @@
     this.method = normalizeMethod(options.method || this.method || 'GET')
     this.mode = options.mode || this.mode || null
     this.referrer = null
+    this.timeout = options.timeout || null
 
     if ((this.method === 'GET' || this.method === 'HEAD') && body) {
       throw new TypeError('Body not allowed for GET or HEAD requests')
@@ -424,7 +425,21 @@
         reject(new TypeError('Network request failed'))
       }
 
+      xhr.onabort = function() {
+        reject(new TypeError('Network request aborted'))
+      }
+
       xhr.open(request.method, request.url, true)
+
+      if (request.timeout && request.timeout > 0) {
+        setTimeout(timeoutRequest, request.timeout);
+      } else if (request.timeout.then) {
+        request.timeout.then(timeoutRequest);
+      }
+
+      function timeoutRequest() {
+        xhr && xhr.abort();
+      }
 
       if (request.credentials === 'include') {
         xhr.withCredentials = true
